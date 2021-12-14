@@ -24,7 +24,8 @@ class MainFragment : Fragment() {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var textView: TextView
-    private lateinit var button: Button
+    private lateinit var plusButton: Button
+    private lateinit var minusButton: Button
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,7 +33,8 @@ class MainFragment : Fragment() {
     ): View = inflater.inflate(R.layout.main_fragment, container, false)
         .apply {
             textView = findViewById(R.id.message)
-            button = findViewById(R.id.button)
+            plusButton = findViewById(R.id.plus_button)
+            minusButton = findViewById(R.id.minus_button)
         }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -40,7 +42,8 @@ class MainFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
         lifecycleScope.launch {
-            button.setOnClickListener { viewModel.increment() }
+            plusButton.setOnClickListener { viewModel.sendIntent(MainViewModel.Intent.PLUS) }
+            minusButton.setOnClickListener { viewModel.sendIntent(MainViewModel.Intent.MINUS) }
 
             repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 viewModel.stateFlow
