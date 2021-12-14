@@ -4,11 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
@@ -22,7 +24,7 @@ class MainViewModel : ViewModel() {
     init {
         viewModelScope.launch {
             channel.consumeAsFlow()
-                .map { mapIntent(it) }
+                .flatMapConcat { mapIntent(it) }
                 .scan(INITIAL_VALUE, ::reduceIntent)
                 .onEach { _stateFlow.emit(it) }
                 .collect()
@@ -35,13 +37,15 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    private suspend fun mapIntent(intent: Intent): Int =
+    private suspend fun mapIntent(intent: Intent): Flow<Int> =
         when (intent) {
-            Intent.MINUS -> {
-                delay(500)
-                -1
+            Intent.MULTIPLE_MINUS -> flow {
+                delay(600)
+                emit(-1)
+                delay(600)
+                emit(-1)
             }
-            Intent.PLUS -> 1
+            Intent.PLUS -> flow { emit(1) }
         }
 
     private suspend fun reduceIntent(accumulator: Int, value: Int): Int {
@@ -50,6 +54,6 @@ class MainViewModel : ViewModel() {
     }
 
     enum class Intent {
-        MINUS, PLUS
+        MULTIPLE_MINUS, PLUS
     }
 }

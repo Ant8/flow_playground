@@ -43,7 +43,7 @@ class MainFragment : Fragment() {
 
         lifecycleScope.launch {
             plusButton.setOnClickListener { viewModel.sendIntent(MainViewModel.Intent.PLUS) }
-            minusButton.setOnClickListener { viewModel.sendIntent(MainViewModel.Intent.MINUS) }
+            minusButton.setOnClickListener { viewModel.sendIntent(MainViewModel.Intent.MULTIPLE_MINUS) }
 
             repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 viewModel.stateFlow
